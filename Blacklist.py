@@ -72,6 +72,3 @@ def reverse_ip(ip):
     octects = list(reversed(octects))
     reversed_ip = ".".join(octects)
     return reversed_ip
-
-b = Blacklist(1,2,3)
-print b.run()
