@@ -9,6 +9,8 @@ import os
 import re
 import copy
 import socket
+import multiprocessing
+pool = multiprocessing.Pool()
 
 """ 
 Black lists 
@@ -116,7 +118,6 @@ class Blacklist (object):
                 ip = ip_line.split(":")[1].split(" ")[0]
             if(not self.ip_is_private(ip)):
                 ips_set.add(ip)
-        print ips_set
         return ips_set
 
     def ip_is_private(self, ip):
@@ -129,7 +130,7 @@ class Blacklist (object):
     def ip_is_listed(self, ip, dnsbl):
         ip = reverse_ip(ip)
         try:
-            socket.gethostbyname(ip + dnsbl)
+            socket.gethostbyname(ip + "." + dnsbl)
             return True
         except:
             return False
@@ -138,9 +139,7 @@ class Blacklist (object):
         total = 0
         for ip in self.ips:
             for blacklist in self.blacklists:
-                print "ip: " +  ip " dnsbl: " + blacklist
                 if(self.ip_is_listed(ip, blacklist)):
-                    print "Is listed"
                     total += 1
         return total
     
@@ -157,5 +156,3 @@ def reverse_ip(ip):
     octects = list(reversed(octects))
     reversed_ip = ".".join(octects)
     return reversed_ip
-
-b = Blacklist(1,2,3)
