@@ -15,6 +15,16 @@ class Blacklist (object):
         self.agentConfig = agentConfig
         self.checksLogger = checksLogger
         self.rawConfig = rawConfig
+        self.blacklists_file = "Blacklists.csv"
+        self.blacklists = self.get_blacklists()
+        self.ips = self.get_system_public_ips()
+
+
+    def get_blacklists(self):
+        f = open(self.blacklists_file, "r")
+        lists = f.read().strip().split("\n")
+        f.close()
+        return lists
  
     def get_system_public_ips(self):
         ips_text = os.popen("ifconfig | grep -E \'inet (addr|end)\'").read().strip()
@@ -41,32 +51,27 @@ class Blacklist (object):
         except:
             return False
 
+    def check_all(self):
+        total = 0
+        for ip in self.ips:
+            for blacklist in self.blacklists:
+                if(self.ip_is_listed(ip, blacklist)):
+                    total += 1
+        return total
+    
+
     def run(self):
-        data = {'blacklists': 0}
+        data = {'blacklists': self.check_all()}
         return data
 
 """
 A function to reverse an IP to prepare it to test in the DNSBL
 """
 def reverse_ip(ip):
-    # Add a . in the final if necessary
-    if(ip[len(ip)-1]!='.'):
-        ip+='.'
-        
-    # Fetch all the octects
-    aux=[]
-    auxSt=''
-    for i in range(len(ip)):
-        if(ip[i]!='.'):
-            auxSt+=ip[i]
-        elif(ip[i]=='.'):
-            aux.append(copy.deepcopy(auxSt))
-            auxSt=''
-            
-    # Reverse the octects
-    aux.reverse()
-    ip=''
-    for i in range(len(aux)):
-        ip+=aux[i]+'.'
-        
-    return ip
+    octects = ip.split(".")
+    octects = list(reversed(octects))
+    reversed_ip = ".".join(octects)
+    return reversed_ip
+
+b = Blacklist(1,2,3)
+print b.run()
