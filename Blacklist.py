@@ -1,5 +1,14 @@
+"""
+Blacklist Plugin for Server Density to monitor Email BlackList Listing
+Author: Andre Freitas
+Email: p.andrefreitas@gmail.com / andrefreitas@ptwebtech.pt
+Twitter: http://twitter.com/cantodoandre
+"""
+
 import os
 import re
+import copy
+import socket
 
 class Blacklist (object):
     def __init__(self, agentConfig, checksLogger, rawConfig):
@@ -24,11 +33,40 @@ class Blacklist (object):
         regex += "|192\.168\."
         return bool(re.match(regex, ip))
 
- 
+    def ip_is_listed(self, ip, dnsbl):
+        ip = reverse_ip(ip)
+        try:
+            socket.gethostbyname(ip + dnsbl)
+            return True
+        except:
+            return False
+
     def run(self):
         data = {'blacklists': 0}
         return data
- 
-b = Blacklist(1,2,3)
-print b.get_system_ips()
-print b.ip_is_private("172.31.0.2")
+
+"""
+A function to reverse an IP to prepare it to test in the DNSBL
+"""
+def reverse_ip(ip):
+    # Add a . in the final if necessary
+    if(ip[len(ip)-1]!='.'):
+        ip+='.'
+        
+    # Fetch all the octects
+    aux=[]
+    auxSt=''
+    for i in range(len(ip)):
+        if(ip[i]!='.'):
+            auxSt+=ip[i]
+        elif(ip[i]=='.'):
+            aux.append(copy.deepcopy(auxSt))
+            auxSt=''
+            
+    # Reverse the octects
+    aux.reverse()
+    ip=''
+    for i in range(len(aux)):
+        ip+=aux[i]+'.'
+        
+    return ip
