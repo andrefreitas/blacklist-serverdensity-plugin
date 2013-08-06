@@ -9,8 +9,6 @@ import os
 import re
 import copy
 import socket
-import multiprocessing
-pool = multiprocessing.Pool()
 
 """ 
 Black lists 
