@@ -1,8 +1,6 @@
 """
 Blacklist Plugin for Server Density to monitor Email BlackList Listing
-Author: Andre Freitas
-Twitter: http://twitter.com/cantodoandre
-Linkedin: http://pt.linkedin.com/in/andrefreitas1/
+Author: Andre Freitas / www.andrefreitas.pt
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
